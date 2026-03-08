@@ -17,14 +17,14 @@ const userTabs = [
   { path: "/user/communicate", icon: MessageSquare, label: "Talk" },
   { path: "/user/chat", icon: MessagesSquare, label: "Chat" },
   { path: "/user/tracking", icon: MapPin, label: "Track" },
-  { path: "/user/alerts", icon: Bell, label: "Alerts" },
+  { path: "/user/profile", icon: UserCircle, label: "Profile" },
 ];
 
 const caregiverTabs = [
   { path: "/caregiver", icon: Home, label: "Home" },
   { path: "/caregiver/tracking", icon: MapPin, label: "Track" },
   { path: "/caregiver/analysis", icon: BarChart3, label: "AI" },
-  { path: "/caregiver/alerts", icon: Bell, label: "Alerts" },
+  { path: "/caregiver/chat", icon: MessagesSquare, label: "Chat" },
   { path: "/caregiver/profile", icon: UserCircle, label: "Profile" },
 ];
 
