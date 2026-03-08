@@ -5,14 +5,18 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppProvider } from "@/contexts/AppContext";
 import SplashScreen from "./pages/SplashScreen";
+import Landing from "./pages/Landing";
 import RoleSelect from "./pages/RoleSelect";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import Welcome from "./pages/onboarding/Welcome";
+import ProfileSetup from "./pages/onboarding/ProfileSetup";
 import Permissions from "./pages/onboarding/Permissions";
 import AccessibilitySetup from "./pages/onboarding/AccessibilitySetup";
 import CommunicationPreferences from "./pages/onboarding/CommunicationPreferences";
 import UserHome from "./pages/user/UserHome";
 import CommunicationBoard from "./pages/user/CommunicationBoard";
+import CustomPhraseBuilder from "./pages/user/CustomPhraseBuilder";
 import ChatScreen from "./pages/user/ChatScreen";
 import VoiceOutput from "./pages/user/VoiceOutput";
 import UserTracking from "./pages/user/UserTracking";
@@ -41,11 +45,14 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<SplashScreen />} />
+            <Route path="/landing" element={<Landing />} />
             <Route path="/role-select" element={<RoleSelect />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
 
             {/* Onboarding */}
             <Route path="/onboarding/welcome" element={<Welcome />} />
+            <Route path="/onboarding/profile-setup" element={<ProfileSetup />} />
             <Route path="/onboarding/permissions" element={<Permissions />} />
             <Route path="/onboarding/accessibility" element={<AccessibilitySetup />} />
             <Route path="/onboarding/communication" element={<CommunicationPreferences />} />
@@ -53,6 +60,7 @@ const App = () => (
             {/* User Routes */}
             <Route path="/user" element={<UserHome />} />
             <Route path="/user/communicate" element={<CommunicationBoard />} />
+            <Route path="/user/custom-phrases" element={<CustomPhraseBuilder />} />
             <Route path="/user/chat" element={<ChatScreen />} />
             <Route path="/user/voice" element={<VoiceOutput />} />
             <Route path="/user/tracking" element={<UserTracking />} />

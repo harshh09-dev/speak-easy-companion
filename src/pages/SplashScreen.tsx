@@ -8,29 +8,74 @@ const SplashScreen = () => {
   const navigate = useNavigate();
   const { onboardingComplete } = useApp();
   const [showTagline, setShowTagline] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setShowTagline(true), 1200);
+    const t1 = setTimeout(() => setShowTagline(true), 900);
     const t2 = setTimeout(() => {
-      navigate(onboardingComplete ? "/role-select" : "/onboarding/welcome");
-    }, 3200);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
+      navigate(onboardingComplete ? "/landing" : "/landing");
+    }, 3400);
+
+    // Progress bar animation
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 1.5;
+      });
+    }, 40);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearInterval(interval);
+    };
   }, [navigate, onboardingComplete]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-hero relative overflow-hidden">
-      {/* Ambient rings */}
+      {/* Particle-like ambient dots */}
+      {[...Array(6)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute h-1 w-1 rounded-full bg-primary-foreground/20"
+          style={{
+            top: `${20 + i * 12}%`,
+            left: `${15 + i * 13}%`,
+          }}
+          animate={{
+            y: [0, -20, 0],
+            opacity: [0.2, 0.6, 0.2],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 3 + i * 0.5,
+            delay: i * 0.3,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+
+      {/* Expanding rings */}
       <motion.div
-        className="absolute h-[500px] w-[500px] rounded-full border border-primary-foreground/5"
+        className="absolute h-[400px] w-[400px] rounded-full border border-primary-foreground/5"
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 2, ease: "easeOut" }}
       />
       <motion.div
-        className="absolute h-[700px] w-[700px] rounded-full border border-primary-foreground/[0.03]"
+        className="absolute h-[600px] w-[600px] rounded-full border border-primary-foreground/[0.03]"
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 2.5, ease: "easeOut", delay: 0.2 }}
+      />
+      <motion.div
+        className="absolute h-[800px] w-[800px] rounded-full border border-primary-foreground/[0.02]"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 3, ease: "easeOut", delay: 0.4 }}
       />
 
       {/* Logo container with glow */}
@@ -41,16 +86,23 @@ const SplashScreen = () => {
       >
         {/* Glow behind logo */}
         <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-32 w-32 rounded-full bg-primary-foreground/10 blur-2xl"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-40 w-40 rounded-full bg-primary-foreground/10 blur-3xl"
           initial={{ scale: 0 }}
-          animate={{ scale: [0, 1.5, 1.2] }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
+          animate={{ scale: [0, 1.8, 1.3] }}
+          transition={{ duration: 1.8, ease: "easeOut" }}
+        />
+
+        {/* Pulse ring around logo */}
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[80px] h-28 w-28 rounded-full border-2 border-primary-foreground/10"
+          animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0, 0.3] }}
+          transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
         />
 
         <motion.img
           src={logo}
           alt="NeuroSpeak Logo"
-          className="h-24 w-24 mb-5 relative z-10 drop-shadow-lg"
+          className="h-24 w-24 mb-6 relative z-10 drop-shadow-lg"
           initial={{ scale: 0, rotate: -20 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
@@ -78,25 +130,31 @@ const SplashScreen = () => {
           animate={{ opacity: showTagline ? 1 : 0, y: showTagline ? 0 : 10 }}
           transition={{ duration: 0.5 }}
         >
-          AI-Powered Assistive Communication
+          Voice Beyond Words
         </motion.p>
       </motion.div>
 
-      {/* Loading dots */}
+      {/* Progress bar */}
       <motion.div
-        className="absolute bottom-16 flex gap-1.5"
+        className="absolute bottom-20 w-48"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
+        transition={{ delay: 1.2 }}
       >
-        {[0, 1, 2].map((i) => (
+        <div className="w-full h-1 rounded-full bg-primary-foreground/10 overflow-hidden">
           <motion.div
-            key={i}
-            className="h-1.5 w-1.5 rounded-full bg-primary-foreground/50"
-            animate={{ opacity: [0.3, 1, 0.3] }}
-            transition={{ repeat: Infinity, duration: 1.2, delay: i * 0.2 }}
+            className="h-full rounded-full bg-primary-foreground/50"
+            style={{ width: `${progress}%` }}
           />
-        ))}
+        </div>
+        <motion.p
+          className="text-[10px] text-primary-foreground/40 text-center mt-2 font-medium tracking-wider uppercase"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
+        >
+          Loading your experience
+        </motion.p>
       </motion.div>
     </div>
   );
