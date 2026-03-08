@@ -21,7 +21,7 @@ const colorMap: Record<string, string> = {
 
 const NotificationToast = () => {
   const { notifications, markAsRead } = useNotifications();
-  const prevCountRef = useRef(notifications.length);
+  
   const latestUnread = notifications.find((n) => !n.read && n.time === "Just now");
 
   // Auto-dismiss after 4 seconds
