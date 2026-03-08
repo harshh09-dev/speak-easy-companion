@@ -2,7 +2,7 @@ import MobileLayout from "@/components/MobileLayout";
 import { motion } from "framer-motion";
 import { useApp } from "@/contexts/AppContext";
 import { useNavigate } from "react-router-dom";
-import { UserCircle, Mail, Phone, Settings, LogOut, ChevronRight } from "lucide-react";
+import { UserCircle, Mail, Phone, Settings, LogOut, ChevronRight, Shield, Watch, Edit } from "lucide-react";
 
 interface ProfileScreenProps {
   role: "user" | "caregiver";
@@ -19,8 +19,9 @@ const ProfileScreen = ({ role }: ProfileScreenProps) => {
   };
 
   const menuItems = [
-    { label: "Edit Profile", icon: UserCircle, action: () => {} },
-    { label: "Emergency Contacts", icon: Phone, action: () => {} },
+    { label: "Edit Profile", icon: Edit, action: () => navigate(`/${role}/edit-profile`) },
+    { label: "Emergency Contacts", icon: Phone, action: () => navigate(`/${role}/emergency-contacts`) },
+    { label: "Wearable Devices", icon: Watch, action: () => navigate("/wearable/setup") },
     { label: "Settings", icon: Settings, action: () => navigate(`/${role}/settings`) },
   ];
 
@@ -37,6 +38,7 @@ const ProfileScreen = ({ role }: ProfileScreenProps) => {
           </div>
           <h1 className="text-xl font-bold text-foreground">{userName}</h1>
           <p className="text-muted-foreground text-sm capitalize">{role}</p>
+          <p className="text-xs text-muted-foreground mt-1">alex@neurospeak.com</p>
         </motion.div>
 
         <div className="flex flex-col gap-2 mb-6">
