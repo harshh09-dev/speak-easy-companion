@@ -41,10 +41,10 @@ import RealtimeNotificationInit from "./components/RealtimeNotificationInit";
 const queryClient = new QueryClient();
 
 const pageTransition = {
-  initial: { opacity: 0, y: 10 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -6 },
-  transition: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
+  initial: { opacity: 0, y: 12, scale: 0.99 },
+  animate: { opacity: 1, y: 0, scale: 1 },
+  exit: { opacity: 0, y: -8, scale: 0.99 },
+  transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
 };
 
 const AnimatedRoutes = () => {
