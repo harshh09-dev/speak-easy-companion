@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { useApp } from "@/contexts/AppContext";
 import MobileLayout from "@/components/MobileLayout";
-import { Hand, Droplets, UtensilsCrossed, Moon, AlertTriangle, ShieldCheck, Watch, Heart, Activity, Sparkles } from "lucide-react";
+import { Hand, Droplets, UtensilsCrossed, Moon, AlertTriangle, ShieldCheck, Watch, Heart, Activity } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useNotifications } from "@/contexts/NotificationContext";
 
@@ -28,7 +28,7 @@ const stagger = {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
 const UserHome = () => {
