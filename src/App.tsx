@@ -86,6 +86,7 @@ const AnimatedRoutes = () => {
           <Route path="/caregiver/tracking" element={<CaregiverTracking />} />
           <Route path="/caregiver/analysis" element={<AIAnalysis />} />
           <Route path="/caregiver/emotions" element={<EmotionDashboard />} />
+          <Route path="/caregiver/chat" element={<ChatScreen />} />
           <Route path="/caregiver/alerts" element={<AlertsScreen role="caregiver" />} />
           <Route path="/caregiver/profile" element={<ProfileScreen role="caregiver" />} />
           <Route path="/caregiver/settings" element={<SettingsScreen role="caregiver" />} />
