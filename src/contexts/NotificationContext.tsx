@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, AlertTriangle, MessageSquare, Heart, Activity, X, ChevronRight } from "lucide-react";
+import { Bell, AlertTriangle, MessageSquare, Heart, Activity, X } from "lucide-react";
 
 export interface Notification {
   id: string;
