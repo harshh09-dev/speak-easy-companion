@@ -4,6 +4,7 @@ import { useApp } from "@/contexts/AppContext";
 import MobileLayout from "@/components/MobileLayout";
 import { Hand, Droplets, UtensilsCrossed, Moon, AlertTriangle, ShieldCheck, Watch, Heart, Activity } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useNotifications } from "@/contexts/NotificationContext";
 
 const quickActions = [
   { label: "I Need Help", icon: Hand, color: "bg-destructive" },
@@ -20,19 +21,44 @@ function getGreeting() {
   return "Good evening";
 }
 
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06, delayChildren: 0.2 } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+};
+
 const UserHome = () => {
   const { userName } = useApp();
   const navigate = useNavigate();
+  const { addNotification } = useNotifications();
   const greeting = useMemo(() => getGreeting(), []);
 
   const handleQuickAction = (label: string) => {
     navigate(`/user/voice?phrase=${encodeURIComponent(label)}`);
   };
 
+  const handleEmergency = () => {
+    addNotification({
+      type: "emergency",
+      title: "Emergency Activated",
+      body: "Emergency alert sent to all caregivers. Location shared.",
+    });
+    navigate("/emergency");
+  };
+
   return (
     <MobileLayout role="user">
-      <div className="px-5 pt-6">
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+      <motion.div
+        className="px-5 pt-6"
+        variants={stagger}
+        initial="hidden"
+        animate="show"
+      >
+        <motion.div variants={fadeUp}>
           <p className="text-muted-foreground text-sm">{greeting}</p>
           <h1 className="text-2xl font-bold text-foreground">Hello, {userName} 👋</h1>
           <p className="text-muted-foreground text-sm mt-1">How can we help today?</p>
@@ -40,11 +66,11 @@ const UserHome = () => {
 
         {/* Emergency Button */}
         <motion.button
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2 }}
-          onClick={() => navigate("/emergency")}
-          className="mt-5 w-full rounded-xl bg-gradient-danger p-5 text-destructive-foreground text-center shadow-elevated"
+          variants={fadeUp}
+          whileTap={{ scale: 0.97 }}
+          whileHover={{ scale: 1.01 }}
+          onClick={handleEmergency}
+          className="mt-5 w-full rounded-xl bg-gradient-danger p-5 text-destructive-foreground text-center shadow-elevated active:shadow-card transition-shadow"
         >
           <AlertTriangle className="h-8 w-8 mx-auto mb-1" />
           <p className="font-bold text-lg">EMERGENCY</p>
@@ -52,16 +78,18 @@ const UserHome = () => {
         </motion.button>
 
         {/* Quick Communication */}
-        <h2 className="text-lg font-semibold text-foreground mt-7 mb-3">Quick Communicate</h2>
-        <div className="grid grid-cols-2 gap-3">
-          {quickActions.map((action, i) => (
+        <motion.h2 variants={fadeUp} className="text-lg font-semibold text-foreground mt-7 mb-3">
+          Quick Communicate
+        </motion.h2>
+        <motion.div variants={stagger} className="grid grid-cols-2 gap-3">
+          {quickActions.map((action) => (
             <motion.button
               key={action.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 + i * 0.07 }}
+              variants={fadeUp}
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ y: -2 }}
               onClick={() => handleQuickAction(action.label)}
-              className="flex flex-col items-center gap-2 rounded-xl bg-card p-5 shadow-card border border-border hover:shadow-elevated transition-shadow"
+              className="flex flex-col items-center gap-2 rounded-xl bg-card p-5 shadow-card border border-border hover:shadow-elevated hover:border-primary/30 transition-all"
             >
               <div className={`h-12 w-12 rounded-full ${action.color} flex items-center justify-center`}>
                 <action.icon className="h-6 w-6 text-primary-foreground" />
@@ -69,13 +97,11 @@ const UserHome = () => {
               <span className="text-sm font-medium text-card-foreground">{action.label}</span>
             </motion.button>
           ))}
-        </div>
+        </motion.div>
 
         {/* AI Status */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
+          variants={fadeUp}
           className="mt-6 rounded-xl bg-card p-5 shadow-card border border-border"
         >
           <div className="flex items-center gap-3 mb-3">
@@ -90,7 +116,13 @@ const UserHome = () => {
             <p className="text-xs text-muted-foreground mb-1">Today's Activity</p>
             <div className="flex gap-1 items-end h-10">
               {[40, 65, 50, 80, 70, 55, 90, 60, 75, 45, 85, 70].map((h, i) => (
-                <div key={i} className="flex-1 rounded-sm bg-primary/60" style={{ height: `${h}%` }} />
+                <motion.div
+                  key={i}
+                  className="flex-1 rounded-sm bg-primary/60"
+                  initial={{ height: 0 }}
+                  animate={{ height: `${h}%` }}
+                  transition={{ delay: 0.5 + i * 0.04, duration: 0.4, ease: "easeOut" }}
+                />
               ))}
             </div>
           </div>
@@ -98,9 +130,7 @@ const UserHome = () => {
 
         {/* Wearable Quick Stats */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
+          variants={fadeUp}
           className="mt-4 rounded-xl bg-card p-4 shadow-card border border-border mb-6"
         >
           <div className="flex items-center gap-2 mb-3">
@@ -125,7 +155,7 @@ const UserHome = () => {
             ))}
           </div>
         </motion.div>
-      </div>
+      </motion.div>
     </MobileLayout>
   );
 };
