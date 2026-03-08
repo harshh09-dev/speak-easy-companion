@@ -16,7 +16,7 @@ const defaultPhrases = [
 
 const CommunicationPreferences = () => {
   const navigate = useNavigate();
-  const { setOnboardingComplete } = useApp();
+  const { role, setOnboardingComplete, setIsLoggedIn } = useApp();
   const [selected, setSelected] = useState<string[]>(defaultPhrases.map((p) => p.id));
 
   const toggle = (id: string) => {
@@ -25,7 +25,8 @@ const CommunicationPreferences = () => {
 
   const handleFinish = () => {
     setOnboardingComplete(true);
-    navigate("/role-select");
+    setIsLoggedIn(true);
+    navigate(role === "caregiver" ? "/caregiver" : "/user");
   };
 
   return (
@@ -47,6 +48,7 @@ const CommunicationPreferences = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.06 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => toggle(phrase.id)}
               className={`flex flex-col items-center gap-3 rounded-xl p-5 border transition-all ${
                 isSelected

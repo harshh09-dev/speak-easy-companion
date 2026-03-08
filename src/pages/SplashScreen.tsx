@@ -6,17 +6,20 @@ import logo from "@/assets/neurospeak-logo.png";
 
 const SplashScreen = () => {
   const navigate = useNavigate();
-  const { onboardingComplete } = useApp();
+  const { isLoggedIn, role } = useApp();
   const [showTagline, setShowTagline] = useState(false);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     const t1 = setTimeout(() => setShowTagline(true), 900);
     const t2 = setTimeout(() => {
-      navigate(onboardingComplete ? "/landing" : "/landing");
+      if (isLoggedIn && role) {
+        navigate(role === "caregiver" ? "/caregiver" : "/user");
+      } else {
+        navigate("/landing");
+      }
     }, 3400);
 
-    // Progress bar animation
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -32,7 +35,7 @@ const SplashScreen = () => {
       clearTimeout(t2);
       clearInterval(interval);
     };
-  }, [navigate, onboardingComplete]);
+  }, [navigate, isLoggedIn, role]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-hero relative overflow-hidden">
@@ -41,20 +44,9 @@ const SplashScreen = () => {
         <motion.div
           key={i}
           className="absolute h-1 w-1 rounded-full bg-primary-foreground/20"
-          style={{
-            top: `${20 + i * 12}%`,
-            left: `${15 + i * 13}%`,
-          }}
-          animate={{
-            y: [0, -20, 0],
-            opacity: [0.2, 0.6, 0.2],
-          }}
-          transition={{
-            repeat: Infinity,
-            duration: 3 + i * 0.5,
-            delay: i * 0.3,
-            ease: "easeInOut",
-          }}
+          style={{ top: `${20 + i * 12}%`, left: `${15 + i * 13}%` }}
+          animate={{ y: [0, -20, 0], opacity: [0.2, 0.6, 0.2] }}
+          transition={{ repeat: Infinity, duration: 3 + i * 0.5, delay: i * 0.3, ease: "easeInOut" }}
         />
       ))}
 
@@ -78,27 +70,19 @@ const SplashScreen = () => {
         transition={{ duration: 3, ease: "easeOut", delay: 0.4 }}
       />
 
-      {/* Logo container with glow */}
-      <motion.div
-        className="relative z-10 flex flex-col items-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        {/* Glow behind logo */}
+      {/* Logo container */}
+      <motion.div className="relative z-10 flex flex-col items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <motion.div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-40 w-40 rounded-full bg-primary-foreground/10 blur-3xl"
           initial={{ scale: 0 }}
           animate={{ scale: [0, 1.8, 1.3] }}
           transition={{ duration: 1.8, ease: "easeOut" }}
         />
-
-        {/* Pulse ring around logo */}
         <motion.div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[80px] h-28 w-28 rounded-full border-2 border-primary-foreground/10"
           animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0, 0.3] }}
           transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
         />
-
         <motion.img
           src={logo}
           alt="NeuroSpeak Logo"
@@ -107,7 +91,6 @@ const SplashScreen = () => {
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
         />
-
         <motion.h1
           className="text-3xl font-extrabold tracking-tight text-primary-foreground mb-1.5 relative z-10"
           initial={{ opacity: 0, y: 20 }}
@@ -116,14 +99,12 @@ const SplashScreen = () => {
         >
           NeuroSpeak
         </motion.h1>
-
         <motion.div
           className="h-0.5 w-12 bg-primary-foreground/30 rounded-full mb-3"
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ delay: 0.8, duration: 0.5 }}
         />
-
         <motion.p
           className="text-primary-foreground/75 text-sm font-medium tracking-wide"
           initial={{ opacity: 0, y: 10 }}
@@ -142,10 +123,7 @@ const SplashScreen = () => {
         transition={{ delay: 1.2 }}
       >
         <div className="w-full h-1 rounded-full bg-primary-foreground/10 overflow-hidden">
-          <motion.div
-            className="h-full rounded-full bg-primary-foreground/50"
-            style={{ width: `${progress}%` }}
-          />
+          <motion.div className="h-full rounded-full bg-primary-foreground/50" style={{ width: `${progress}%` }} />
         </div>
         <motion.p
           className="text-[10px] text-primary-foreground/40 text-center mt-2 font-medium tracking-wider uppercase"

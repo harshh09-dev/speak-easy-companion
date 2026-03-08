@@ -9,7 +9,7 @@ import { useApp } from "@/contexts/AppContext";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const { setIsLoggedIn } = useApp();
+  const { role } = useApp();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,7 +17,6 @@ const Signup = () => {
 
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock signup — navigate to profile setup
     navigate("/onboarding/profile-setup");
   };
 
@@ -28,7 +27,7 @@ const Signup = () => {
         animate={{ opacity: 1, x: 0 }}
         className="pt-6"
       >
-        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-primary font-medium mb-8">
+        <button onClick={() => navigate("/login")} className="flex items-center gap-2 text-primary font-medium mb-8">
           <ArrowLeft className="h-4 w-4" /> Back
         </button>
       </motion.div>
@@ -43,7 +42,9 @@ const Signup = () => {
           <UserPlus className="h-7 w-7 text-primary-foreground" />
         </div>
         <h1 className="text-2xl font-bold text-foreground mb-1">Create Account</h1>
-        <p className="text-muted-foreground text-sm">Join NeuroSpeak and start communicating</p>
+        <p className="text-muted-foreground text-sm">
+          {role === "caregiver" ? "Sign up as a Caregiver" : "Sign up as a User"}
+        </p>
       </motion.div>
 
       <motion.form
