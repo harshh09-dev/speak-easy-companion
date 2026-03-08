@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, ArrowLeft, MapPin, Phone, Heart } from "lucide-react";
+import { haptics } from "@/lib/haptics";
 
 const EmergencyScreen = () => {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ const EmergencyScreen = () => {
   const [breathPhase, setBreathPhase] = useState<"inhale" | "exhale">("inhale");
 
   useEffect(() => {
+    haptics.emergency();
     const timer = setTimeout(() => setPhase("breathing"), 3000);
     return () => clearTimeout(timer);
   }, []);
@@ -44,7 +46,6 @@ const EmergencyScreen = () => {
               Emergency Alert Sent
             </h1>
 
-            {/* Status items */}
             <div className="space-y-3 mb-8">
               {[
                 { icon: Phone, text: "Calling Caregiver...", delay: 0.5 },
@@ -84,7 +85,6 @@ const EmergencyScreen = () => {
               Stay calm. Help is coming.
             </h2>
 
-            {/* Breathing exercise */}
             <div className="mb-8">
               <motion.div
                 animate={{
@@ -115,7 +115,11 @@ const EmergencyScreen = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
-        onClick={() => navigate(-1)}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => {
+          haptics.light();
+          navigate(-1);
+        }}
         className="absolute bottom-10 flex items-center gap-2 rounded-xl bg-destructive-foreground/20 px-6 py-3 text-destructive-foreground font-medium"
       >
         <ArrowLeft className="h-4 w-4" />

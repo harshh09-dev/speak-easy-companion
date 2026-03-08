@@ -1,10 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import MobileLayout from "@/components/MobileLayout";
-import { UtensilsCrossed, Droplets, Moon, Heart, Bath, Smile, ArrowLeft, Volume2, Sparkles, Clock } from "lucide-react";
+import { UtensilsCrossed, Droplets, Moon, Heart, Bath, Smile, ArrowLeft, Volume2, Sparkles, Clock, Plus } from "lucide-react";
+import { haptics } from "@/lib/haptics";
 
-const categories = [
+const defaultCategories = [
   { id: "food", label: "Food", icon: UtensilsCrossed, messages: ["I am hungry", "I want a snack", "I want lunch", "I want dinner", "I want breakfast"] },
   { id: "water", label: "Water", icon: Droplets, messages: ["I need water", "I want juice", "I want milk", "I am thirsty"] },
   { id: "sleep", label: "Sleep", icon: Moon, messages: ["I am tired", "I want to sleep", "I need rest", "I can't sleep"] },
@@ -47,13 +48,46 @@ function getSmartSuggestions(): { phrase: string; reason: string }[] {
   ];
 }
 
+const CUSTOM_PHRASES_KEY = "neurospeak_custom_phrases";
+
+interface CustomPhrase {
+  id: number;
+  text: string;
+  icon: string;
+  category: string;
+}
+
 const CommunicationBoard = () => {
   const [selected, setSelected] = useState<string | null>(null);
+  const [customPhrases, setCustomPhrases] = useState<CustomPhrase[]>([]);
   const navigate = useNavigate();
-  const activeCategory = categories.find((c) => c.id === selected);
   const suggestions = useMemo(() => getSmartSuggestions(), []);
 
+  // Load custom phrases from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(CUSTOM_PHRASES_KEY);
+      if (stored) setCustomPhrases(JSON.parse(stored));
+    } catch {}
+  }, []);
+
+  const categories = useMemo(() => {
+    if (customPhrases.length === 0) return defaultCategories;
+    return [
+      ...defaultCategories,
+      {
+        id: "custom",
+        label: "My Phrases",
+        icon: Sparkles,
+        messages: customPhrases.map((p) => p.text),
+      },
+    ];
+  }, [customPhrases]);
+
+  const activeCategory = categories.find((c) => c.id === selected);
+
   const handlePhraseClick = (phrase: string) => {
+    haptics.medium();
     navigate(`/user/voice?phrase=${encodeURIComponent(phrase)}`);
   };
 
@@ -63,7 +97,19 @@ const CommunicationBoard = () => {
         <AnimatePresence mode="wait">
           {!selected ? (
             <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <h1 className="text-xl font-bold text-foreground mb-1">Communicate</h1>
+              <div className="flex items-center justify-between mb-1">
+                <h1 className="text-xl font-bold text-foreground">Communicate</h1>
+                <motion.button
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => {
+                    haptics.light();
+                    navigate("/user/custom-phrases");
+                  }}
+                  className="h-9 w-9 rounded-full bg-gradient-primary flex items-center justify-center shadow-card"
+                >
+                  <Plus className="h-4 w-4 text-primary-foreground" />
+                </motion.button>
+              </div>
               <p className="text-muted-foreground text-sm mb-5">Choose a category or use a suggestion</p>
 
               {/* Smart Suggestions */}
@@ -85,6 +131,7 @@ const CommunicationBoard = () => {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.08 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => handlePhraseClick(s.phrase)}
                       className="flex items-center gap-3 rounded-lg bg-card p-3 border border-border hover:border-primary transition-colors"
                     >
@@ -104,23 +151,49 @@ const CommunicationBoard = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.15 + i * 0.06 }}
-                    onClick={() => setSelected(cat.id)}
-                    className="flex flex-col items-center gap-3 rounded-xl bg-card p-6 shadow-card border border-border hover:border-primary transition-colors"
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      haptics.light();
+                      setSelected(cat.id);
+                    }}
+                    className={`flex flex-col items-center gap-3 rounded-xl bg-card p-6 shadow-card border border-border hover:border-primary transition-colors ${
+                      cat.id === "custom" ? "border-primary/30 bg-primary/5" : ""
+                    }`}
                   >
                     <div className="h-14 w-14 rounded-full bg-gradient-primary flex items-center justify-center">
                       <cat.icon className="h-7 w-7 text-primary-foreground" />
                     </div>
                     <span className="font-medium text-card-foreground">{cat.label}</span>
+                    {cat.id === "custom" && (
+                      <span className="text-[10px] text-primary font-medium -mt-2">{cat.messages.length} phrases</span>
+                    )}
                   </motion.button>
                 ))}
               </div>
             </motion.div>
           ) : (
             <motion.div key="messages" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
-              <button onClick={() => setSelected(null)} className="flex items-center gap-2 text-primary font-medium mb-4">
+              <button
+                onClick={() => {
+                  haptics.light();
+                  setSelected(null);
+                }}
+                className="flex items-center gap-2 text-primary font-medium mb-4"
+              >
                 <ArrowLeft className="h-4 w-4" /> Back
               </button>
-              <h2 className="text-xl font-bold text-foreground mb-4">{activeCategory?.label}</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-foreground">{activeCategory?.label}</h2>
+                {selected === "custom" && (
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => navigate("/user/custom-phrases")}
+                    className="text-xs text-primary font-medium flex items-center gap-1"
+                  >
+                    <Plus className="h-3 w-3" /> Add More
+                  </motion.button>
+                )}
+              </div>
               <div className="flex flex-col gap-3 mb-6">
                 {activeCategory?.messages.map((msg, i) => (
                   <motion.button
@@ -128,6 +201,7 @@ const CommunicationBoard = () => {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.08 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => handlePhraseClick(msg)}
                     className="w-full text-left rounded-xl bg-card p-5 shadow-card border border-border text-lg font-medium text-card-foreground hover:border-primary hover:shadow-elevated transition-all flex items-center justify-between"
                   >

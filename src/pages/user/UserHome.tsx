@@ -5,6 +5,7 @@ import MobileLayout from "@/components/MobileLayout";
 import { Hand, Droplets, UtensilsCrossed, Moon, AlertTriangle, ShieldCheck, Watch, Heart, Activity } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useNotifications } from "@/contexts/NotificationContext";
+import { haptics } from "@/lib/haptics";
 
 const quickActions = [
   { label: "I Need Help", icon: Hand, color: "bg-destructive" },
@@ -38,14 +39,17 @@ const UserHome = () => {
   const greeting = useMemo(() => getGreeting(), []);
 
   const handleQuickAction = (label: string) => {
+    haptics.medium();
     navigate(`/user/voice?phrase=${encodeURIComponent(label)}`);
   };
 
   const handleEmergency = () => {
+    haptics.emergency();
     addNotification({
       type: "emergency",
       title: "Emergency Activated",
       body: "Emergency alert sent to all caregivers. Location shared.",
+      roles: ["user", "caregiver"],
     });
     navigate("/emergency");
   };

@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import MobileLayout from "@/components/MobileLayout";
 import { ArrowLeft, Plus, Trash2, Volume2, Sparkles, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { haptics } from "@/lib/haptics";
 
 const iconOptions = ["💬", "💊", "🍽️", "💧", "😊", "😢", "🆘", "🛁", "🌙", "❤️", "🎵", "📞"];
 const categoryOptions = ["Food", "Health", "Emotions", "Needs", "Activities", "Custom"];
+
+const CUSTOM_PHRASES_KEY = "neurospeak_custom_phrases";
 
 interface CustomPhrase {
   id: number;
@@ -18,22 +21,46 @@ interface CustomPhrase {
 
 const CustomPhraseBuilder = () => {
   const navigate = useNavigate();
-  const [phrases, setPhrases] = useState<CustomPhrase[]>([
-    { id: 1, text: "I want my medicine", icon: "💊", category: "Health" },
-    { id: 2, text: "Can we go outside?", icon: "🌙", category: "Activities" },
-    { id: 3, text: "I miss you", icon: "❤️", category: "Emotions" },
-  ]);
+  const [phrases, setPhrases] = useState<CustomPhrase[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [newText, setNewText] = useState("");
   const [newIcon, setNewIcon] = useState("💬");
   const [newCategory, setNewCategory] = useState("Custom");
 
+  // Load from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(CUSTOM_PHRASES_KEY);
+      if (stored) {
+        setPhrases(JSON.parse(stored));
+      } else {
+        const defaults: CustomPhrase[] = [
+          { id: 1, text: "I want my medicine", icon: "💊", category: "Health" },
+          { id: 2, text: "Can we go outside?", icon: "🌙", category: "Activities" },
+          { id: 3, text: "I miss you", icon: "❤️", category: "Emotions" },
+        ];
+        setPhrases(defaults);
+        localStorage.setItem(CUSTOM_PHRASES_KEY, JSON.stringify(defaults));
+      }
+    } catch {
+      setPhrases([]);
+    }
+  }, []);
+
+  // Persist to localStorage
+  const persist = (updated: CustomPhrase[]) => {
+    setPhrases(updated);
+    localStorage.setItem(CUSTOM_PHRASES_KEY, JSON.stringify(updated));
+  };
+
   const addPhrase = () => {
     if (!newText.trim()) return;
-    setPhrases((prev) => [
-      ...prev,
+    haptics.success();
+    const updated = [
+      ...phrases,
       { id: Date.now(), text: newText.trim(), icon: newIcon, category: newCategory },
-    ]);
+    ];
+    persist(updated);
     setNewText("");
     setNewIcon("💬");
     setNewCategory("Custom");
@@ -41,10 +68,12 @@ const CustomPhraseBuilder = () => {
   };
 
   const removePhrase = (id: number) => {
-    setPhrases((prev) => prev.filter((p) => p.id !== id));
+    haptics.medium();
+    persist(phrases.filter((p) => p.id !== id));
   };
 
   const speakPhrase = (text: string) => {
+    haptics.light();
     if ("speechSynthesis" in window) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
@@ -61,16 +90,20 @@ const CustomPhraseBuilder = () => {
             <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="text-xl font-bold text-foreground flex-1">Custom Phrases</h1>
-          <button
-            onClick={() => setIsAdding(true)}
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => {
+              haptics.light();
+              setIsAdding(true);
+            }}
             className="h-10 w-10 rounded-full bg-gradient-primary flex items-center justify-center shadow-card"
           >
             <Plus className="h-5 w-5 text-primary-foreground" />
-          </button>
+          </motion.button>
         </div>
 
         <p className="text-sm text-muted-foreground mb-5">
-          Create personalized phrases for your communication board
+          Create personalized phrases — they appear in your Communication Board automatically
         </p>
 
         {/* Add new phrase form */}
@@ -95,13 +128,15 @@ const CustomPhraseBuilder = () => {
                 autoFocus
               />
 
-              {/* Icon selection */}
               <p className="text-xs text-muted-foreground font-medium mb-2">Choose an icon</p>
               <div className="flex flex-wrap gap-2 mb-3">
                 {iconOptions.map((icon) => (
                   <button
                     key={icon}
-                    onClick={() => setNewIcon(icon)}
+                    onClick={() => {
+                      haptics.light();
+                      setNewIcon(icon);
+                    }}
                     className={`h-10 w-10 rounded-lg border text-lg flex items-center justify-center transition-all ${
                       newIcon === icon
                         ? "border-primary bg-primary/10 scale-110"
@@ -113,13 +148,15 @@ const CustomPhraseBuilder = () => {
                 ))}
               </div>
 
-              {/* Category selection */}
               <p className="text-xs text-muted-foreground font-medium mb-2">Category</p>
               <div className="flex flex-wrap gap-2 mb-4">
                 {categoryOptions.map((cat) => (
                   <button
                     key={cat}
-                    onClick={() => setNewCategory(cat)}
+                    onClick={() => {
+                      haptics.light();
+                      setNewCategory(cat);
+                    }}
                     className={`rounded-full px-3 py-1.5 text-xs font-medium border transition-all ${
                       newCategory === cat
                         ? "border-primary bg-primary/10 text-primary"
@@ -160,6 +197,7 @@ const CustomPhraseBuilder = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.06 }}
+              layout
               className="rounded-xl bg-card p-4 shadow-card border border-border flex items-center gap-3"
             >
               <span className="text-2xl">{phrase.icon}</span>
@@ -169,18 +207,20 @@ const CustomPhraseBuilder = () => {
                   {phrase.category}
                 </p>
               </div>
-              <button
+              <motion.button
+                whileTap={{ scale: 0.9 }}
                 onClick={() => speakPhrase(phrase.text)}
                 className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0"
               >
                 <Volume2 className="h-4 w-4" />
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.9 }}
                 onClick={() => removePhrase(phrase.id)}
                 className="h-9 w-9 rounded-full bg-destructive/10 flex items-center justify-center text-destructive shrink-0"
               >
                 <Trash2 className="h-4 w-4" />
-              </button>
+              </motion.button>
             </motion.div>
           ))}
         </div>
