@@ -21,10 +21,9 @@ const colorMap: Record<string, string> = {
 
 const NotificationToast = () => {
   const { notifications, markAsRead } = useNotifications();
-  
+
   const latestUnread = notifications.find((n) => !n.read && n.time === "Just now");
 
-  // Auto-dismiss after 4 seconds
   useEffect(() => {
     if (latestUnread) {
       const timer = setTimeout(() => markAsRead(latestUnread.id), 4000);
@@ -54,6 +53,11 @@ const NotificationToast = () => {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-card-foreground">{latestUnread.title}</p>
                 <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{latestUnread.body}</p>
+                {latestUnread.roles?.length === 2 && (
+                  <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium mt-1 inline-block">
+                    Synced to all roles
+                  </span>
+                )}
               </div>
               <button
                 onClick={() => markAsRead(latestUnread.id)}

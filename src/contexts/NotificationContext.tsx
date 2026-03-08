@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, AlertTriangle, MessageSquare, Heart, Activity, X } from "lucide-react";
+import { haptics } from "@/lib/haptics";
 
 export interface Notification {
   id: string;
@@ -9,12 +10,14 @@ export interface Notification {
   body: string;
   time: string;
   read: boolean;
+  /** Which role(s) should see this notification */
+  roles: ("user" | "caregiver")[];
 }
 
 interface NotificationContextType {
   notifications: Notification[];
   unreadCount: number;
-  addNotification: (n: Omit<Notification, "id" | "time" | "read">) => void;
+  addNotification: (n: Omit<Notification, "id" | "time" | "read"> & { roles?: ("user" | "caregiver")[] }) => void;
   markAsRead: (id: string) => void;
   markAllRead: () => void;
   clearNotification: (id: string) => void;
@@ -25,11 +28,11 @@ interface NotificationContextType {
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 const initialNotifications: Notification[] = [
-  { id: "1", type: "emergency", title: "Emergency Alert", body: "Alex pressed the emergency button", time: "2 min ago", read: false },
-  { id: "2", type: "health", title: "Heart Rate Spike", body: "Heart rate elevated to 110 BPM for 5 minutes", time: "15 min ago", read: false },
-  { id: "3", type: "message", title: "New Message", body: "Mom sent a message: 'How are you?'", time: "30 min ago", read: false },
-  { id: "4", type: "alert", title: "Stress Level Rising", body: "AI detected increased stress from interaction patterns", time: "1 hr ago", read: true },
-  { id: "5", type: "system", title: "Wearable Connected", body: "Apple Watch Series 9 connected successfully", time: "2 hrs ago", read: true },
+  { id: "1", type: "emergency", title: "Emergency Alert", body: "Alex pressed the emergency button", time: "2 min ago", read: false, roles: ["user", "caregiver"] },
+  { id: "2", type: "health", title: "Heart Rate Spike", body: "Heart rate elevated to 110 BPM for 5 minutes", time: "15 min ago", read: false, roles: ["user", "caregiver"] },
+  { id: "3", type: "message", title: "New Message", body: "Mom sent a message: 'How are you?'", time: "30 min ago", read: false, roles: ["user"] },
+  { id: "4", type: "alert", title: "Stress Level Rising", body: "AI detected increased stress from interaction patterns", time: "1 hr ago", read: true, roles: ["caregiver"] },
+  { id: "5", type: "system", title: "Wearable Connected", body: "Apple Watch Series 9 connected successfully", time: "2 hrs ago", read: true, roles: ["user", "caregiver"] },
 ];
 
 const typeConfig: Record<string, { icon: typeof Bell; color: string; bg: string }> = {
@@ -46,14 +49,22 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const addNotification = useCallback((n: Omit<Notification, "id" | "time" | "read">) => {
+  const addNotification = useCallback((n: Omit<Notification, "id" | "time" | "read"> & { roles?: ("user" | "caregiver")[] }) => {
     const newNotif: Notification = {
       ...n,
       id: Date.now().toString(),
       time: "Just now",
       read: false,
+      roles: n.roles || ["user", "caregiver"],
     };
     setNotifications((prev) => [newNotif, ...prev]);
+    
+    // Haptic feedback on new notification
+    if (n.type === "emergency") {
+      haptics.emergency();
+    } else {
+      haptics.notification();
+    }
   }, []);
 
   const markAsRead = useCallback((id: string) => {
@@ -158,7 +169,12 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
                             )}
                           </div>
                           <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{notif.body}</p>
-                          <p className="text-[10px] text-muted-foreground mt-1">{notif.time}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <p className="text-[10px] text-muted-foreground">{notif.time}</p>
+                            {notif.roles.length === 2 && (
+                              <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">Synced</span>
+                            )}
+                          </div>
                         </div>
                         <button
                           onClick={(e) => {
