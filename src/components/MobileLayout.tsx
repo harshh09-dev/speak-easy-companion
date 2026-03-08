@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Home, MessageSquare, MapPin, Bell, UserCircle, BarChart3 } from "lucide-react";
+import { Home, MessageSquare, MapPin, Bell, UserCircle, BarChart3, MessagesSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface MobileLayoutProps {
@@ -11,13 +11,13 @@ interface MobileLayoutProps {
 const userTabs = [
   { path: "/user", icon: Home, label: "Home" },
   { path: "/user/communicate", icon: MessageSquare, label: "Talk" },
+  { path: "/user/chat", icon: MessagesSquare, label: "Chat" },
   { path: "/user/tracking", icon: MapPin, label: "Track" },
   { path: "/user/alerts", icon: Bell, label: "Alerts" },
-  { path: "/user/profile", icon: UserCircle, label: "Profile" },
 ];
 
 const caregiverTabs = [
-  { path: "/caregiver", icon: Home, label: "Dashboard" },
+  { path: "/caregiver", icon: Home, label: "Home" },
   { path: "/caregiver/tracking", icon: MapPin, label: "Track" },
   { path: "/caregiver/analysis", icon: BarChart3, label: "AI" },
   { path: "/caregiver/alerts", icon: Bell, label: "Alerts" },
