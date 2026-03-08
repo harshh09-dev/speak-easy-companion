@@ -19,9 +19,9 @@ const ProfileScreen = ({ role }: ProfileScreenProps) => {
   };
 
   const menuItems = [
-    { label: "Edit Profile", icon: UserCircle },
-    { label: "Emergency Contacts", icon: Phone },
-    { label: "Settings", icon: Settings },
+    { label: "Edit Profile", icon: UserCircle, action: () => {} },
+    { label: "Emergency Contacts", icon: Phone, action: () => {} },
+    { label: "Settings", icon: Settings, action: () => navigate(`/${role}/settings`) },
   ];
 
   return (
@@ -46,6 +46,7 @@ const ProfileScreen = ({ role }: ProfileScreenProps) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 + i * 0.06 }}
+              onClick={item.action}
               className="flex items-center gap-3 rounded-xl bg-card p-4 shadow-card border border-border w-full text-left"
             >
               <item.icon className="h-5 w-5 text-primary" />

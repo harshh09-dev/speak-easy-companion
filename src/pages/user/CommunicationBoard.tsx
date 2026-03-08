@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import MobileLayout from "@/components/MobileLayout";
-import { UtensilsCrossed, Droplets, Moon, Heart, Bath, Smile, ArrowLeft } from "lucide-react";
+import { UtensilsCrossed, Droplets, Moon, Heart, Bath, Smile, ArrowLeft, Volume2 } from "lucide-react";
 
 const categories = [
   { id: "food", label: "Food", icon: UtensilsCrossed, messages: ["I am hungry", "I want a snack", "I want lunch", "I want dinner"] },
@@ -14,7 +15,12 @@ const categories = [
 
 const CommunicationBoard = () => {
   const [selected, setSelected] = useState<string | null>(null);
+  const navigate = useNavigate();
   const activeCategory = categories.find((c) => c.id === selected);
+
+  const handlePhraseClick = (phrase: string) => {
+    navigate(`/user/voice?phrase=${encodeURIComponent(phrase)}`);
+  };
 
   return (
     <MobileLayout role="user">
@@ -58,9 +64,11 @@ const CommunicationBoard = () => {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.08 }}
-                    className="w-full text-left rounded-xl bg-card p-5 shadow-card border border-border text-lg font-medium text-card-foreground hover:border-primary hover:shadow-elevated transition-all"
+                    onClick={() => handlePhraseClick(msg)}
+                    className="w-full text-left rounded-xl bg-card p-5 shadow-card border border-border text-lg font-medium text-card-foreground hover:border-primary hover:shadow-elevated transition-all flex items-center justify-between"
                   >
-                    {msg}
+                    <span>{msg}</span>
+                    <Volume2 className="h-5 w-5 text-primary shrink-0" />
                   </motion.button>
                 ))}
               </div>

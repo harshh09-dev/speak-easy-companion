@@ -1,15 +1,19 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useApp } from "@/contexts/AppContext";
 import { motion } from "framer-motion";
 import logo from "@/assets/neurospeak-logo.png";
 
 const SplashScreen = () => {
   const navigate = useNavigate();
+  const { onboardingComplete } = useApp();
 
   useEffect(() => {
-    const timer = setTimeout(() => navigate("/role-select"), 2500);
+    const timer = setTimeout(() => {
+      navigate(onboardingComplete ? "/role-select" : "/onboarding/welcome");
+    }, 2500);
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, onboardingComplete]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-hero">
