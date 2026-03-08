@@ -54,10 +54,7 @@ const AccessibilitySetup = () => {
         transition={{ delay: 0.2 }}
         className="rounded-xl bg-card p-5 shadow-card border border-border mb-4"
       >
-        <button
-          onClick={toggleDarkMode}
-          className="flex items-center gap-3 w-full"
-        >
+        <button onClick={toggleDarkMode} className="flex items-center gap-3 w-full">
           <div className={`h-10 w-10 rounded-full flex items-center justify-center ${isDarkMode ? "bg-primary" : "bg-muted"}`}>
             <Moon className={`h-5 w-5 ${isDarkMode ? "text-primary-foreground" : "text-muted-foreground"}`} />
           </div>
@@ -78,10 +75,7 @@ const AccessibilitySetup = () => {
         transition={{ delay: 0.3 }}
         className="rounded-xl bg-card p-5 shadow-card border border-border mb-4"
       >
-        <button
-          onClick={() => setHighContrast(!highContrast)}
-          className="flex items-center gap-3 w-full"
-        >
+        <button onClick={() => setHighContrast(!highContrast)} className="flex items-center gap-3 w-full">
           <div className={`h-10 w-10 rounded-full flex items-center justify-center ${highContrast ? "bg-primary" : "bg-muted"}`}>
             <Eye className={`h-5 w-5 ${highContrast ? "text-primary-foreground" : "text-muted-foreground"}`} />
           </div>

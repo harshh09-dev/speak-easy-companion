@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Camera, Globe, Phone, UserCircle } from "lucide-react";
+import { Camera, Phone, UserCircle } from "lucide-react";
 
 const languages = ["English", "Spanish", "French", "Hindi", "Arabic", "Chinese"];
 
@@ -17,7 +17,7 @@ const ProfileSetup = () => {
   return (
     <div className="flex min-h-screen flex-col bg-background px-6 pt-12 max-w-[480px] mx-auto">
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <p className="text-sm text-primary font-medium mb-1">Profile Setup</p>
+        <p className="text-sm text-primary font-medium mb-1">Step 1 of 3</p>
         <h1 className="text-2xl font-bold text-foreground mb-1">Set Up Your Profile</h1>
         <p className="text-muted-foreground text-sm mb-8">Tell us a little about yourself</p>
       </motion.div>
@@ -91,13 +91,13 @@ const ProfileSetup = () => {
 
       <div className="mt-auto pb-8 pt-6">
         <Button
-          onClick={() => navigate("/onboarding/permissions")}
+          onClick={() => navigate("/onboarding/accessibility")}
           className="w-full h-14 rounded-xl bg-gradient-primary text-primary-foreground font-semibold text-base"
         >
           Continue
         </Button>
         <button
-          onClick={() => navigate("/onboarding/permissions")}
+          onClick={() => navigate("/onboarding/accessibility")}
           className="w-full mt-3 text-sm text-muted-foreground hover:text-foreground transition-colors text-center"
         >
           Skip for now

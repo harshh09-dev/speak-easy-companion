@@ -78,7 +78,7 @@ const Landing = () => {
         </div>
       </div>
 
-      {/* CTA buttons */}
+      {/* CTA button → goes to Role Selection */}
       <motion.div
         className="relative z-10 mt-auto px-8 pb-12 pt-8"
         initial={{ opacity: 0, y: 20 }}
@@ -86,17 +86,10 @@ const Landing = () => {
         transition={{ delay: 0.8 }}
       >
         <Button
-          onClick={() => navigate("/login")}
-          className="w-full h-14 rounded-xl bg-gradient-primary text-primary-foreground font-semibold text-base shadow-elevated mb-3"
+          onClick={() => navigate("/role-select")}
+          className="w-full h-14 rounded-xl bg-gradient-primary text-primary-foreground font-semibold text-base shadow-elevated"
         >
-          Log In
-        </Button>
-        <Button
-          onClick={() => navigate("/signup")}
-          variant="outline"
-          className="w-full h-14 rounded-xl font-semibold text-base border-2"
-        >
-          Create Account
+          Get Started
         </Button>
       </motion.div>
     </div>

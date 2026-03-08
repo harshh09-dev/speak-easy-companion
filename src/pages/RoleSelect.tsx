@@ -10,14 +10,12 @@ const roles = [
     title: "I need to communicate",
     desc: "Express needs and feelings with easy-to-use tools",
     icon: User,
-    gradient: "from-primary to-primary-glow",
   },
   {
     id: "caregiver" as const,
     title: "I am a Caregiver",
     desc: "Monitor wellbeing and get AI-powered insights",
     icon: Shield,
-    gradient: "from-success to-primary",
   },
 ];
 
@@ -49,9 +47,9 @@ const RoleSelect = () => {
           transition={{ type: "spring", delay: 0.1 }}
         />
         <h1 className="text-2xl font-extrabold text-foreground mb-1.5 tracking-tight">
-          Welcome to NeuroSpeak
+          Choose Your Role
         </h1>
-        <p className="text-muted-foreground text-sm">How will you be using the app?</p>
+        <p className="text-muted-foreground text-sm">How will you be using NeuroSpeak?</p>
       </motion.div>
 
       <div className="flex flex-col gap-4 w-full max-w-sm relative z-10">

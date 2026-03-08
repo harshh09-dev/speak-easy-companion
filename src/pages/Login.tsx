@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Brain } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import logo from "@/assets/neurospeak-logo.png";
 
 const Login = () => {
@@ -13,6 +13,7 @@ const Login = () => {
   const { role, setIsLoggedIn } = useApp();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +22,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6 relative overflow-hidden">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6 relative overflow-hidden max-w-[480px] mx-auto">
       <div className="absolute top-0 left-0 w-full h-48 bg-gradient-calm opacity-50" />
 
       <motion.button
@@ -29,6 +30,7 @@ const Login = () => {
         className="absolute top-6 left-6 p-2 rounded-xl bg-card border border-border text-muted-foreground hover:text-foreground transition-colors z-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
+        whileTap={{ scale: 0.9 }}
       >
         <ArrowLeft className="h-5 w-5" />
       </motion.button>
@@ -70,15 +72,29 @@ const Login = () => {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password" className="text-sm font-semibold">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="h-12 rounded-xl bg-card border-border focus:border-primary focus:ring-primary/20"
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-12 rounded-xl bg-card border-border focus:border-primary focus:ring-primary/20 pr-12"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
+
+          <button type="button" className="text-sm text-primary font-medium w-full text-right">
+            Forgot Password?
+          </button>
+
           <Button type="submit" className="w-full h-12 rounded-xl bg-gradient-primary text-primary-foreground font-bold text-base shadow-glow hover:shadow-elevated transition-shadow">
             Log In
           </Button>
@@ -86,7 +102,7 @@ const Login = () => {
 
         <p className="text-center text-sm text-muted-foreground mt-6">
           Don't have an account?{" "}
-          <button className="text-primary font-semibold hover:underline underline-offset-2">
+          <button onClick={() => navigate("/signup")} className="text-primary font-semibold hover:underline underline-offset-2">
             Sign Up
           </button>
         </p>
