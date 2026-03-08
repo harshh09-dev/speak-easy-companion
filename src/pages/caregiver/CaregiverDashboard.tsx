@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import MobileLayout from "@/components/MobileLayout";
 import { useApp } from "@/contexts/AppContext";
-import { ShieldCheck, TrendingDown, Activity, MessageSquare, AlertTriangle, Clock, Brain, ChevronRight } from "lucide-react";
+import { ShieldCheck, TrendingDown, Activity, MessageSquare, AlertTriangle, Clock, Brain, ChevronRight, Heart, Watch } from "lucide-react";
 
 const CaregiverDashboard = () => {
   const { userName } = useApp();
@@ -67,6 +67,42 @@ const CaregiverDashboard = () => {
           ))}
         </div>
 
+        {/* Circular Progress Charts */}
+        <div className="grid grid-cols-2 gap-3 mt-5">
+          {[
+            { label: "Communication", value: 72, color: "hsl(var(--primary))" },
+            { label: "Activity", value: 85, color: "hsl(var(--success))" },
+          ].map((chart, i) => (
+            <motion.div
+              key={chart.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 + i * 0.08 }}
+              className="rounded-xl bg-card p-4 shadow-card border border-border flex flex-col items-center"
+            >
+              <div className="relative h-20 w-20 mb-2">
+                <svg viewBox="0 0 100 100" className="h-20 w-20 -rotate-90">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="hsl(var(--muted))" strokeWidth="8" />
+                  <motion.circle
+                    cx="50" cy="50" r="40" fill="none"
+                    stroke={chart.color}
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeDasharray={`${(chart.value / 100) * 251.3} 251.3`}
+                    initial={{ strokeDasharray: "0 251.3" }}
+                    animate={{ strokeDasharray: `${(chart.value / 100) * 251.3} 251.3` }}
+                    transition={{ delay: 0.5 + i * 0.1, duration: 1 }}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-lg font-bold text-foreground">{chart.value}%</span>
+                </div>
+              </div>
+              <p className="text-xs font-medium text-muted-foreground">{chart.label}</p>
+            </motion.div>
+          ))}
+        </div>
+
         {/* Communication Frequency */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -116,12 +152,42 @@ const CaregiverDashboard = () => {
           </div>
         </motion.div>
 
+        {/* Wearable Data */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.58 }}
+          className="mt-4 rounded-xl bg-card p-5 shadow-card border border-border"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <Watch className="h-5 w-5 text-primary" />
+            <h2 className="font-semibold text-card-foreground">Wearable Data</h2>
+            <div className="ml-auto flex items-center gap-1">
+              <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
+              <span className="text-[10px] text-success font-medium">Live</span>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { icon: Heart, label: "Heart Rate", value: "72 BPM", color: "text-destructive" },
+              { icon: Activity, label: "Steps", value: "3,241", color: "text-primary" },
+              { icon: Brain, label: "Stress", value: "Low", color: "text-success" },
+            ].map((d) => (
+              <div key={d.label} className="text-center">
+                <d.icon className={`h-4 w-4 ${d.color} mx-auto mb-1`} />
+                <p className="text-sm font-bold text-foreground">{d.value}</p>
+                <p className="text-[10px] text-muted-foreground">{d.label}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
         {/* Quick Insights */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="mt-4 rounded-xl bg-warning/10 border border-warning/30 p-4 mb-4"
+          className="mt-4 rounded-xl bg-warning/10 border border-warning/30 p-4"
         >
           <div className="flex items-center gap-2 mb-1">
             <TrendingDown className="h-4 w-4 text-warning" />
@@ -130,18 +196,27 @@ const CaregiverDashboard = () => {
           <p className="text-sm text-muted-foreground">Activity decreased 12% compared to yesterday. Consider checking in.</p>
         </motion.div>
 
-        {/* Activity Timeline Link */}
-        <motion.button
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.65 }}
-          onClick={() => navigate("/caregiver/timeline")}
-          className="w-full rounded-xl bg-card p-4 shadow-card border border-border flex items-center gap-3 mb-6"
-        >
-          <Clock className="h-5 w-5 text-primary" />
-          <span className="flex-1 text-left font-medium text-card-foreground">View Activity Timeline</span>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-        </motion.button>
+        {/* Navigation Links */}
+        <div className="mt-4 space-y-2 mb-6">
+          {[
+            { label: "View Activity Timeline", icon: Clock, path: "/caregiver/timeline" },
+            { label: "Emotion Detection", icon: Brain, path: "/caregiver/emotions" },
+            { label: "Wearable Setup", icon: Watch, path: "/wearable/setup" },
+          ].map((item, i) => (
+            <motion.button
+              key={item.label}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.65 + i * 0.05 }}
+              onClick={() => navigate(item.path)}
+              className="w-full rounded-xl bg-card p-4 shadow-card border border-border flex items-center gap-3"
+            >
+              <item.icon className="h-5 w-5 text-primary" />
+              <span className="flex-1 text-left font-medium text-card-foreground">{item.label}</span>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </motion.button>
+          ))}
+        </div>
       </div>
     </MobileLayout>
   );
